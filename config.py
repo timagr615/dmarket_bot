@@ -1,13 +1,10 @@
-import os
+from credentials import PUBLIC_KEY, SECRET_KEY
 from logger.logger import BaseLogger
 
 DEBUG = False
 LOG_FILE = True
 
 logger = BaseLogger(DEBUG, LOG_FILE)
-
-PUBLIC_KEY = "279a15a105ff154598bb823ec51ce62e4e6bbc1476152cfb33cc2007dcbac67d"
-SECRET_KEY = "39637fdb289c90803c6b876586341a39ed1b092b62286d4ffafe87ecc2acc354279a15a105ff154598bb823ec51ce62e4e6bbc1476152cfb33cc2007dcbac67d"
 
 proxies = ''
 
