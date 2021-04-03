@@ -1,0 +1,9 @@
+/venv
+.idea/
+__pycache__/
+*skins.db
+*.log
+credentials.py
+/db/test.py
+test.py
+test2.py
