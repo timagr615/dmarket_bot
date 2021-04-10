@@ -1,17 +1,18 @@
-from typing import List
-from furl import furl
 import asyncio
 import aiohttp
 import requests
 import json
 from datetime import datetime
 from asyncio import CancelledError
+from typing import List
+from furl import furl
 from nacl.bindings import crypto_sign
+
 from config import API_URL, API_URL_TRADING, logger
 from api.exceptions import *
-from api.schemas import Balance, Games, LastSales, SalesHistory, MarketOffers, AggregatedPrices, AggregatedTitle, \
+from api.schemas import Balance, Games, LastSales, SalesHistory, MarketOffers, AggregatedTitle, \
     UserTargets, ClosedTargets, Target, UserItems, CreateOffers, CreateOffersResponse, EditOffers, EditOffersResponse, \
-    DeleteOffers
+    DeleteOffers, CreateTargets
 
 
 class DMarketApi:
@@ -47,14 +48,16 @@ class DMarketApi:
 
     @staticmethod
     def catch_exception(response_status: int, headers: dict, response_text: str):
+        if response_status == 400:
+            raise BadRequestError()
         if response_status == 502 or response_status == 500:
             raise BadGatewayError()
         if response_status == 429:
             raise TooManyRequests()
-        if response_status != 200 and 'application/json' not in headers['content-type']:
-            raise WrongResponseException(response_text)
         if response_status == 401:
             raise BadAPIKeyException()
+        if response_status != 200 and 'application/json' not in headers['content-type']:
+            raise WrongResponseException(response_text)
 
     async def validate_response(self, response: aiohttp.ClientResponse or requests.Response) -> dict:
         """
@@ -67,7 +70,6 @@ class DMarketApi:
         if 'RateLimit-Remaining' not in headers:
             await asyncio.sleep(5)
         if 'RateLimit-Remaining' in headers and headers['RateLimit-Remaining'] in ['1', '0']:
-            # logger.debug(f'RATE LIMIT {headers["RateLimit-Remaining"]}')
             await asyncio.sleep(int(headers['RateLimit-Reset']))
         if isinstance(response, requests.Response):
             response_status = response.status_code
@@ -88,6 +90,10 @@ class DMarketApi:
             return await self.validate_response(response)
         if method == 'GET':
             async with self.session.get(url, params=params, headers=headers) as response:
+                data = await self.validate_response(response)
+                return data
+        elif method == 'DELETE':
+            async with self.session.delete(url, params=params, json=body, headers=headers) as response:
                 data = await self.validate_response(response)
                 return data
         else:
@@ -231,34 +237,12 @@ class DMarketApi:
         response = await self.api_call(url, method, headers, params)
         return ClosedTargets(**response)
 
-    async def create_target(self, body: dict):
-        """
-        BODY TYPE
-        {
-          "Targets": [
-            {
-              "Amount": "string",
-              "Price": {
-                "Currency": "string",
-                "Amount": 0
-              },
-              "Attributes": [
-                {
-                  "Name": "string",
-                  "Value": "string"
-                }
-              ]
-            }
-          ]
-        }
-        :param body:
-        :return:
-        """
+    async def create_target(self, body: CreateTargets):
         method = 'POST'
         url_path = '/marketplace-api/v1/user-targets/create'
-        headers = self.generate_headers(method, url_path, body=body)
+        headers = self.generate_headers(method, url_path, body=body.dict())
         url = API_URL + url_path
-        response = await self.api_call(url, method, headers, body=body)
+        response = await self.api_call(url, method, headers, body=body.dict())
         return response
 
     async def delete_target(self, targets: List[Target]):
@@ -288,20 +272,20 @@ class DMarketApi:
         response = await self.api_call(url, method, headers, params=params)
         return UserItems(**response)
 
-    async def user_items(self) -> MarketOffers:
+    async def user_items(self, game: Games = Games.CS) -> MarketOffers:
         method = 'GET'
         url_path = '/exchange/v1/user/items'
-        params = {'GameId': 'a8db', 'currency': 'USD', 'limit': '50'}
+        params = {'GameId': game.value, 'currency': 'USD', 'limit': '50'}
         headers = self.generate_headers(method, url_path, params)
         url = API_URL + url_path
         response = await self.api_call(url, method, headers, params=params)
         return MarketOffers(**response)
 
-    async def user_offers(self, game: str = 'a8db', status: str = 'OfferStatusDefault',
+    async def user_offers(self, game: Games = Games.CS, status: str = 'OfferStatusDefault',
                           sort_type: str = 'UserOffersSortTypeDateNewestFirst', limit: str = '20'):
         method = 'GET'
         url_path = '/marketplace-api/v1/user-offers'
-        params = {'GameId': game, 'Status': status, 'Limit': limit, 'SortType': sort_type}
+        params = {'GameId': game.value, 'Status': status, 'Limit': limit, 'SortType': sort_type}
         headers = self.generate_headers(method, url_path, params)
         url = API_URL + url_path
         response = await self.api_call(url, method, headers, params=params)
@@ -310,6 +294,7 @@ class DMarketApi:
     async def user_offers_create(self, body: CreateOffers):
         method = 'POST'
         url_path = '/marketplace-api/v1/user-offers/create'
+
         body = body.dict()
         headers = self.generate_headers(method, url_path, body=body)
         url = API_URL + url_path

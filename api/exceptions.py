@@ -1,9 +1,7 @@
 from config import logger
-import requests
-import aiohttp
 
 __all__ = ['Error', 'BadGatewayError', 'WrongResponseException', 'BadAPIKeyException', 'InsufficientFundsException',
-           'UnknownError', 'TooManyRequests']
+           'UnknownError', 'TooManyRequests', 'BadRequestError']
 
 
 class Error(Exception):
@@ -62,3 +60,8 @@ class BadGatewayError(Error):
         else:
             logger.error(text)
         self.response = text
+
+
+class BadRequestError(Error):
+    """Неправильный вызов метода."""
+    pass

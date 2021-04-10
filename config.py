@@ -1,16 +1,16 @@
 import sys
 from loguru import logger
+
 from api.schemas import Games
 from credentials import PUBLIC_KEY, SECRET_KEY
 
 
 logger_config = {
     "handlers": [
-        {"sink": sys.stderr, 'colorize': True, 'level': 'DEBUG'},
+        {"sink": sys.stderr, 'colorize': True, 'level': 'INFO'},
         # {"sink": "log/debug.log", "serialize": False, 'level': 'DEBUG'},
         {"sink": "log/info.log", "serialize": False, 'level': 'INFO'},
-    ],
-    "extra": {"user": "someone"}
+    ]
 }
 logger.configure(**logger_config)
 
@@ -22,6 +22,7 @@ proxies = ''
 API_URL = "https://api.dmarket.com"
 API_URL_TRADING = API_URL
 GAMES = [Games.CS, Games.DOTA, Games.RUST]
+DATABASE_NAME = '/skins.db'
 
 BAD_ITEMS = ['key', 'pin', 'sticker', 'case', 'operation', 'pass', 'capsule', 'package', 'challengers',
              'patch', 'music', 'kit', 'graffiti']
@@ -40,11 +41,11 @@ class PrevParams:
 
 class BuyParams:
     FREQUENCY = True
-    MIN_PRICE = 200
-    MAX_PRICE = 3500
+    MIN_PRICE = 300
+    MAX_PRICE = 3000
 
-    PROFIT_PERCENT = 6
-    GOOD_POINTS_PERCENT = 45
+    PROFIT_PERCENT = 7
+    GOOD_POINTS_PERCENT = 50
 
     ALL_SALES = 100
     DAYS_COUNT = 20
@@ -62,5 +63,5 @@ class BuyParams:
 
 
 class SellParams:
-    MIN_PERCENT = 5
+    MIN_PERCENT = 4
     MAX_PERCENT = 12

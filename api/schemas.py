@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
-from typing import List, Dict, Union
-from pydantic import BaseModel, Field
+from typing import List, Union
+from pydantic import BaseModel
 
 
 class Games(enum.Enum):
@@ -17,7 +17,7 @@ class Balance(BaseModel):
 
 class LastPrice(BaseModel):
     Currency: str
-    Amount: int
+    Amount: float
 
 
 class LastSale(BaseModel):
@@ -74,6 +74,7 @@ class MarketOffer(BaseModel):
     price: MarketOfferPrice
     suggestedPrice: MarketOfferPrice
     extra: MarketOfferExtra
+    fees: dict
 
 
 class MarketOffers(BaseModel):
@@ -109,6 +110,7 @@ class Target(BaseModel):
     GameID: Games
     GameType: str = None
     Attributes: List[TargetAttributes]
+    Price: LastPrice
 
 
 class UserTargets(BaseModel):
@@ -160,6 +162,7 @@ class UserItem(BaseModel):
     Tradable: bool
     Attributes: List[TargetAttributes]
     Offer: Offer
+    Fee: LastPrice = None
     MarketPrice: LastPrice = None
     ClassID: str
 
@@ -198,7 +201,7 @@ class EditOffers(BaseModel):
 
 
 class EditOfferResponse(BaseModel):
-    EditOffer: EditOffer
+    EditOffer: CreateOffer
     Successful: bool
     NewOfferID: str
 
@@ -218,9 +221,35 @@ class DeleteOffers(BaseModel):
     objects: List[DeleteOffer]
 
 
-class Skin(LastSales):
-    game: Games
+class SkinHistory(LastSales):
+    game: str
     title: str
     avg_price: float
     update_time: datetime
 
+    class Config:
+        orm_mode = True
+
+
+class SkinOrder(BaseModel):
+    title: str
+    game: Games
+    bestOrder: int = None
+    maxPrice: int = None
+    minPrice: int = None
+    targetId: str = None
+
+
+class SellOffer(BaseModel):
+    AssetID: str
+    title: str = None
+    game: str = None
+    OfferID: str = None
+    sellTime: datetime = None
+    buyPrice: float = None
+    sellPrice: float = None
+    buyTime: datetime = datetime.now()
+    fee: int = 7
+
+    class Config:
+        orm_mode = True
