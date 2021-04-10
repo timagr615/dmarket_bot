@@ -28,7 +28,7 @@ SECRET_KEY = "your secret api key"
 ## Параметры
 Все параметры бота находятся в файле `config.py` в корневой директории бота.
 ### Подробное описание параметров:
-- `logger_config`
+- `logger_config`- конфигурация логгера
 ```python
 logger_config = {
     "handlers": [
@@ -41,10 +41,7 @@ logger.configure(**logger_config)
 ```
 `"sink": sys.stderr` -  выводлогов в консоль
 `"sink": "log/info.log"` - вывод логов в файл
-`'level': 'INFO'` - уровень логов. Возможные уровни: `TRACE
-DEBUG
-INFO
-SUCCESS 
-WARNING
-ERROR 
-CRITICAL`
+`'level': 'INFO'` это уровень логов. Возможные уровни: `TRACE, DEBUG, INFO, SUCCESS, WARNING, ERROR , CRITICAL`. Каждый следующий слева направо уровень запрещайт вывод логов более низкого уровня. То есть если указан уровень `INFO`, сообщения с уровнем `TRACE, DEBUG` выводиться не будут.
+- `GAMES = [Games.CS, Games.DOTA, Games.RUST]` - список игр, по которым будет производиться торговля. Доступные значения: `Games.CS, Games.DOTA, Games.RUST, Games.TF2`
+- `PREV_BASE = 60 * 60 * 4` - обновление базы скинов каждые `PREV_BASE` секунд
+- `ORDERS_BASE = 60 * 10`- обновление базы ордеров каждые `ORDERS_BASE` секунд
