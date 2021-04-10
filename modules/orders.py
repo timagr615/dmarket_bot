@@ -81,9 +81,7 @@ class OrderAnalytics:
         agregated_prices = sorted(agregated_prices, key=lambda x: x['MarketHashName'])
 
         for skin, agr in zip(skins, agregated_prices):
-            # agregated_prices = await self.bot.agregated_prices(skin.market_hash_name)
             best_order = float(agr['Orders']['BestPrice'])
-            # print(len(skin.history['LastSales']))
             points_count = math.ceil(len(skin.history['LastSales']) / 100 * self.good_points_percent)
             count = 0
             for i in skin.history['LastSales']:

@@ -3,6 +3,7 @@ from db.selectors import SelectSkinOffer
 from config import logger
 
 skins = [i for i in SelectSkinOffer.select_all() if i.sell_time]
+logger.write(f'Клличество проданных скинов: {len(skins)}')
 total_profit = 0
 date = datetime(2021, 3, 7).timestamp()
 for i in skins:
