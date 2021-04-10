@@ -39,4 +39,12 @@ logger_config = {
 }
 logger.configure(**logger_config)
 ```
-
+`"sink": sys.stderr` -  выводлогов в консоль
+`"sink": "log/info.log"` - вывод логов в файл
+`'level': 'INFO'` - уровень логов. Возможные уровни: `TRACE
+DEBUG
+INFO
+SUCCESS 
+WARNING
+ERROR 
+CRITICAL`
