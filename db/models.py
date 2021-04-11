@@ -27,7 +27,7 @@ class BaseModel(Model):
 class Skin(BaseModel):
     title = CharField()
     game = CharField()
-    LastSales = JSONField(null=True)
+    LastSales = JSONField()
     avg_price = FloatField()
     update_time = DateTimeField()
 

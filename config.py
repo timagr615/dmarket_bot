@@ -25,7 +25,7 @@ BAD_ITEMS = ['key', 'pin', 'sticker', 'case', 'operation', 'pass', 'capsule', 'p
 
 
 class Timers:
-    PREV_BASE = 60 * 60 * 4
+    PREV_BASE = 60 * 60 * 5
     ORDERS_BASE = 60 * 10
 
 

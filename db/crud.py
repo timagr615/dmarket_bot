@@ -32,16 +32,18 @@ class SelectSkin:
         for item in items:
             try:
                 skin = Skin.get(Skin.title == item.title)
-                skin.avg_price = item.avg_price
-                skin.LastSales = item.LastSales
-                skin.update_time = item.update_time
+                it = item.dict()
+                skin.avg_price = it['avg_price']
+                skin.LastSales = it['LastSales']
+                skin.update_time = it['update_time']
                 skins_to_update.append(skin)
             except DoesNotExist:
-                skin_to_create.append(item)
+                skin_to_create.append(Skin(**item.dict()))
         with db.atomic():
             Skin.bulk_update(skins_to_update,
                              fields=[Skin.avg_price, Skin.LastSales, Skin.update_time],
                              batch_size=500)
+        with db.atomic():
             Skin.bulk_create(skin_to_create, batch_size=500)
 
     @staticmethod
