@@ -131,14 +131,12 @@ class DMarketApi:
                 # logger.debug('get money_loop')
                 await self.get_balance()
                 await asyncio.sleep(60*5)
-            except (BadGatewayError, WrongResponseException, TooManyRequests):
-                continue
-            except UnknownError:
-                continue
             except KeyboardInterrupt:
                 break
             except CancelledError:
                 break
+            except Exception:
+                continue
         return
 
     # MARKET METHODS
