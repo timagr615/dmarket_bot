@@ -16,7 +16,7 @@ class SkinBase:
         self.repeat = Timers.PREV_BASE
         self.min_price = PrevParams.MIN_AVG_PRICE
         self.max_price = PrevParams.MAX_AVG_PRICE
-        self.popularity = PrevParams.POPULARITY
+        # self.popularity = PrevParams.POPULARITY
         self.select_skin = SelectSkin()
         self.min_price_buy = BuyParams.MIN_PRICE
         self.max_price_buy = BuyParams.MAX_PRICE

@@ -14,10 +14,6 @@ logger_config = {
 }
 logger.configure(**logger_config)
 
-DEBUG = False
-LOG_FILE = True
-
-proxies = ''
 
 API_URL = "https://api.dmarket.com"
 API_URL_TRADING = API_URL
@@ -30,12 +26,12 @@ BAD_ITEMS = ['key', 'pin', 'sticker', 'case', 'operation', 'pass', 'capsule', 'p
 
 
 class Timers:
-    PREV_BASE = 60 * 60 * 4
+    PREV_BASE = 60 * 60 * 5
     ORDERS_BASE = 60 * 10
 
 
 class PrevParams:
-    POPULARITY = 3
+    # POPULARITY = 3
     MIN_AVG_PRICE = 400
     MAX_AVG_PRICE = 3500
 

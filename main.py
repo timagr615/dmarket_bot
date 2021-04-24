@@ -48,7 +48,7 @@ async def orders_loop():
 
 async def history_loop():
     while True:
-        logger.info('History loop')
+        logger.debug('History loop')
         try:
             await history.save_skins()
             await asyncio.sleep(60*15)
