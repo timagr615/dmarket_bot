@@ -21,7 +21,8 @@ proxies = ''
 
 API_URL = "https://api.dmarket.com"
 API_URL_TRADING = API_URL
-GAMES = [Games.CS, Games.DOTA, Games.RUST]
+# GAMES = [Games.CS, Games.DOTA, Games.RUST]
+GAMES = [Games.CS]
 DATABASE_NAME = '/skins.db'
 
 BAD_ITEMS = ['key', 'pin', 'sticker', 'case', 'operation', 'pass', 'capsule', 'package', 'challengers',
