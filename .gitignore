@@ -5,3 +5,4 @@ __pycache__/
 *.log
 credentials.py
 test_logger.py
+test.py

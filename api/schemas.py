@@ -253,3 +253,15 @@ class SellOffer(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CumulativePrice(BaseModel):
+    Price: float
+    Level: int
+    Amount: int
+
+
+class CumulativePrices(BaseModel):
+    Offers: List[CumulativePrice]
+    Targets: List[CumulativePrice]
+    UpdatedAt: int

@@ -4,7 +4,7 @@ import requests
 import json
 from datetime import datetime
 from asyncio import CancelledError
-from typing import List
+from typing import List, Union
 from furl import furl
 from nacl.bindings import crypto_sign
 
@@ -12,7 +12,7 @@ from config import API_URL, API_URL_TRADING, logger
 from api.exceptions import *
 from api.schemas import Balance, Games, LastSales, SalesHistory, MarketOffers, AggregatedTitle, \
     UserTargets, ClosedTargets, Target, UserItems, CreateOffers, CreateOffersResponse, EditOffers, EditOffersResponse, \
-    DeleteOffers, CreateTargets
+    DeleteOffers, CreateTargets, CumulativePrices
 
 
 class DMarketApi:
@@ -257,6 +257,15 @@ class DMarketApi:
         # logger.write(f'delete_targets() {url}', 'debug')
         response = await self.api_call(url, method, headers, body=body)
         return response['Result'] + addiction_items
+
+    async def cumulative_price(self, name: str, game: str):
+        method = 'GET'
+        url_path = '/marketplace-api/v1/cumulative-price-levels'
+        params = {'Title': name, 'GameID': game}
+        headers = self.generate_headers(method, url_path, params)
+        url = API_URL + url_path
+        response = await self.api_call(url, method, headers, params)
+        return CumulativePrices(**response)
 
     # SELL ITEMS
     # ---------------------------------------------
