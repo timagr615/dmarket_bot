@@ -75,7 +75,7 @@ class Offers:
                 if i.AssetID == j.AssetID:
                     price = j.buyPrice*(1 + self.max_percent/100 + i.fee/100)
                     i.sellPrice = price
-        create_offers = [CreateOffer(AssetID=i.AssetID, Price=LastPrice(Currency='USD', Amount=i.sellPrice))
+        create_offers = [CreateOffer(AssetID=i.AssetID, Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2)))
                          for i in invent]
         add = await self.bot.user_offers_create(CreateOffers(Offers=create_offers))
         if add.Result:
@@ -114,7 +114,7 @@ class Offers:
                     # logger.info(f'{i.sellPrice} {best_price} {price} {i.fee}')
                     i.sellPrice = price
                     items_to_update.append(EditOffer(OfferID=i.OfferID, AssetID=i.AssetID,
-                                                     Price=LastPrice(Currency='USD', Amount=i.sellPrice)))
+                                                     Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
 
         updated = await self.bot.user_offers_edit(EditOffers(Offers=items_to_update))
         for i in updated.Result:
