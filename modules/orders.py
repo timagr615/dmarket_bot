@@ -136,9 +136,9 @@ class OrderAnalytics:
         market_info = await self.bot.cumulative_price(skin.title, skin.game)
         best_offer, second_offer, offers_count = self.first_second_offer(market_info.Offers)
         best_target, second_target, targets_count = self.first_second_offer(market_info.Targets)
-        if (best_target - second_target)/best_offer*100 > 3:
+        if best_offer == 0 or (best_target - second_target)/best_offer*100 > 3:
             best_target = second_target
-        if (second_offer - best_offer)/second_offer*100 > 3:
+        if second_offer == 0 or (second_offer - best_offer)/second_offer*100 > 3:
             best_offer = second_offer
         profit = -(best_target - (1 - self.bot.SELL_FEE/100) * best_offer) / best_target * 100
         return best_offer, best_target, offers_count, targets_count, profit
