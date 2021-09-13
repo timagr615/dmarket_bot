@@ -32,7 +32,7 @@ async def orders_loop():
         logger.debug(f'orders loop')
         try:
             logger.debug(f'{bot.balance}')
-            if bot.balance > orders.order_list.min_price + 1000:
+            if bot.balance > orders.order_list.min_price + BuyParams.STOP_ORDERS_BALANCE:
                 await orders.update_orders()
                 await asyncio.sleep(5)
             else:
@@ -83,7 +83,7 @@ async def delete_offers_loop():
             await asyncio.sleep(60*60*24*2)
             await offers.delete_all_offers()
         except Exception as e:
-            logger.error(f'Не удалось удальтб офферы: {e}')
+            logger.error(f'Не удалось удалить офферы: {e}')
             await asyncio.sleep(30)
 
 

@@ -37,6 +37,7 @@ class PrevParams:
 
 
 class BuyParams:
+    STOP_ORDERS_BALANCE = 1000
     FREQUENCY = True
     MIN_PRICE = 300
     MAX_PRICE = 3000
