@@ -21,6 +21,7 @@ class History:
 
     async def save_skins(self):
         buy = await self.bot.closed_targets(limit='100')
+
         buy = buy.Trades
         buy = [SellOffer(AssetID=i.AssetID, buyPrice=i.Price.Amount) for i in buy]
         sold = []
@@ -107,18 +108,20 @@ class Offers:
         names = [i.title for i in on_sell]
         agr = await self.bot.agregated_prices(names=names, limit=len(names))
         items_to_update = list()
-        for i, j in zip(on_sell, agr):
-            best_price = j.Offers.BestPrice
-            if i.sellPrice != best_price:
 
-                max_sell_price = i.buyPrice * (1 + self.max_percent / 100 + i.fee / 100)
-                min_sell_price = i.buyPrice * (1 + self.min_percent / 100 + i.fee / 100)
-                price = self.offer_price(max_sell_price, min_sell_price, best_price)
-                if round(price, 2) != round(i.sellPrice, 2):
-                    # logger.info(f'{i.sellPrice} {best_price} {price} {i.fee}')
-                    i.sellPrice = price
-                    items_to_update.append(EditOffer(OfferID=i.OfferID, AssetID=i.AssetID,
-                                                     Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
+        for i in on_sell:
+            for j in agr:
+                if i.title == j.MarketHashName:
+
+                    best_price = j.Offers.BestPrice
+                    if i.sellPrice != best_price:
+                        max_sell_price = i.buyPrice * (1 + self.max_percent / 100 + i.fee / 100)
+                        min_sell_price = i.buyPrice * (1 + self.min_percent / 100 + i.fee / 100)
+                        price = self.offer_price(max_sell_price, min_sell_price, best_price)
+                        if round(price, 2) != round(i.sellPrice, 2):
+                            i.sellPrice = price
+                            items_to_update.append(EditOffer(OfferID=i.OfferID, AssetID=i.AssetID,
+                                                             Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
 
         updated = await self.bot.user_offers_edit(EditOffers(Offers=items_to_update))
         for i in updated.Result:
