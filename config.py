@@ -32,34 +32,34 @@ class Timers:
 
 class PrevParams:
     # POPULARITY = 3
-    MIN_AVG_PRICE = 400
-    MAX_AVG_PRICE = 3500
+    MIN_AVG_PRICE = 900
+    MAX_AVG_PRICE = 35000
 
 
 class BuyParams:
     STOP_ORDERS_BALANCE = 1000
     FREQUENCY = True
-    MIN_PRICE = 300
-    MAX_PRICE = 3000
+    MIN_PRICE = 1000
+    MAX_PRICE = 7500
 
-    PROFIT_PERCENT = 7
-    GOOD_POINTS_PERCENT = 50
+    PROFIT_PERCENT = 6
+    GOOD_POINTS_PERCENT = 35
 
-    ALL_SALES = 100
+    ALL_SALES = 80
     DAYS_COUNT = 20
-    SALE_COUNT = 15
+    SALE_COUNT = 10
     LAST_SALE = 2  # Последняя продажа не позднее LAST_SALE дней назад
     FIRST_SALE = 15  # Первая покупка не позже FIRST_SALE дней назад
 
-    MAX_COUNT_SELL_OFFERS = 30
+    MAX_COUNT_SELL_OFFERS = 20
 
     BOOST_PERCENT = 24
     BOOST_POINTS = 3
 
-    MAX_THRESHOLD = 1  # Максимальное повышение цены на MAX_THRESHOLD процентов от текущего ордера
+    MAX_THRESHOLD = 0.1  # Максимальное повышение цены на MAX_THRESHOLD процентов от текущего ордера
     MIN_THRESHOLD = 3  # Максимальное понижение цены на MIN_THRESHOLD процентов от текущего ордера
 
 
 class SellParams:
-    MIN_PERCENT = 4
-    MAX_PERCENT = 12
+    MIN_PERCENT = 3
+    MAX_PERCENT = 5
