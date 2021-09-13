@@ -69,14 +69,18 @@ class Offers:
                 fee = int(i.fees['dmarket']['sell']['custom']['percentage'])
             if i.inMarket:
                 invent.append(SellOffer(AssetID=i.itemId, title=i.title, game=i.gameId, fee=fee))
-
+        create_offers = []
         for i in invent:
             for j in skins:
                 if i.AssetID == j.AssetID:
                     price = j.buyPrice*(1 + self.max_percent/100 + i.fee/100)
                     i.sellPrice = price
-        create_offers = [CreateOffer(AssetID=i.AssetID, Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2)))
-                         for i in invent]
+            try:
+                create_offers.append(CreateOffer(AssetID=i.AssetID,
+                                             Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
+            except TypeError:
+                pass
+
         add = await self.bot.user_offers_create(CreateOffers(Offers=create_offers))
         if add.Result:
             for i in add.Result:
