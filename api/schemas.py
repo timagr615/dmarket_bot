@@ -265,3 +265,23 @@ class CumulativePrices(BaseModel):
     Offers: List[CumulativePrice]
     Targets: List[CumulativePrice]
     UpdatedAt: int
+
+
+class OfferDetails(BaseModel):
+    items: List[str]
+
+
+class OfferDetailPrice(BaseModel):
+    amount: int
+    currency: str
+
+
+class OfferDetail(BaseModel):
+    itemId: str
+    steamMarketPrice: OfferDetailPrice
+    minListedPrice: OfferDetailPrice
+    offersOnMarketplace: int
+
+
+class OfferDetailsResponse(BaseModel):
+    objects: List[OfferDetail]

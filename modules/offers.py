@@ -2,7 +2,7 @@ import datetime
 from typing import List
 from db.crud import SelectSkinOffer, SkinOffer
 from api.schemas import SellOffer, CreateOffer, CreateOffers, LastPrice, EditOffer, EditOffers, \
-    DeleteOffers, DeleteOffer
+    DeleteOffers, DeleteOffer, OfferDetails
 from api.dmarketapi import DMarketApi
 from config import PUBLIC_KEY, SECRET_KEY, SellParams, logger, GAMES
 from time import time
@@ -43,7 +43,7 @@ class History:
             for i in sell:
                 if s.AssetID == i.AssetID:
                     s.title = i.title
-                    s.sellPrice = i.sellPrice*(1-s.fee/100)
+                    s.sellPrice = i.sellPrice * (1 - s.fee / 100)
                     s.OfferID = i.OfferID
                     s.sellTime = i.sellTime
                     s.game = i.game
@@ -74,11 +74,11 @@ class Offers:
         for i in invent:
             for j in skins:
                 if i.AssetID == j.AssetID:
-                    price = j.buyPrice*(1 + self.max_percent/100 + i.fee/100)
+                    price = j.buyPrice * (1 + self.max_percent / 100 + i.fee / 100)
                     i.sellPrice = price
             try:
                 create_offers.append(CreateOffer(AssetID=i.AssetID,
-                                             Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
+                                                 Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
             except TypeError:
                 pass
 
@@ -103,25 +103,26 @@ class Offers:
         return order_price
 
     async def update_offers(self):
-        on_sell = sorted([i for i in SelectSkinOffer.select_not_sell() if i.OfferID is not None],
+        on_sell = sorted([i for i in SelectSkinOffer.select_not_sell() if i.OfferID],
                          key=lambda x: x.title)
-        names = [i.title for i in on_sell]
-        agr = await self.bot.agregated_prices(names=names, limit=len(names))
+
+        # names = [i.title for i in on_sell]
+        # agr = await self.bot.agregated_prices(names=names, limit=len(names))
         items_to_update = list()
 
         for i in on_sell:
-            for j in agr:
-                if i.title == j.MarketHashName:
+            itemid = OfferDetails(items=[i.AssetID])
+            details = await self.bot.user_offers_details(body=itemid)
+            best_price = details.objects[0].minListedPrice.amount / 100
+            if i.sellPrice != best_price:
+                max_sell_price = i.buyPrice * (1 + self.max_percent / 100 + i.fee / 100)
+                min_sell_price = i.buyPrice * (1 + self.min_percent / 100 + i.fee / 100)
+                price = self.offer_price(max_sell_price, min_sell_price, best_price)
+                if round(price, 2) != round(i.sellPrice, 2):
 
-                    best_price = j.Offers.BestPrice
-                    if i.sellPrice != best_price:
-                        max_sell_price = i.buyPrice * (1 + self.max_percent / 100 + i.fee / 100)
-                        min_sell_price = i.buyPrice * (1 + self.min_percent / 100 + i.fee / 100)
-                        price = self.offer_price(max_sell_price, min_sell_price, best_price)
-                        if round(price, 2) != round(i.sellPrice, 2):
-                            i.sellPrice = price
-                            items_to_update.append(EditOffer(OfferID=i.OfferID, AssetID=i.AssetID,
-                                                             Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
+                    i.sellPrice = price
+                    items_to_update.append(EditOffer(OfferID=i.OfferID, AssetID=i.AssetID,
+                                                     Price=LastPrice(Currency='USD', Amount=round(i.sellPrice, 2))))
 
         updated = await self.bot.user_offers_edit(EditOffers(Offers=items_to_update))
         for i in updated.Result:

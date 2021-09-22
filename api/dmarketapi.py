@@ -12,7 +12,7 @@ from config import API_URL, API_URL_TRADING, logger
 from api.exceptions import *
 from api.schemas import Balance, Games, LastSales, SalesHistory, MarketOffers, AggregatedTitle, \
     UserTargets, ClosedTargets, Target, UserItems, CreateOffers, CreateOffersResponse, EditOffers, EditOffersResponse, \
-    DeleteOffers, CreateTargets, CumulativePrices
+    DeleteOffers, CreateTargets, CumulativePrices, OfferDetails, OfferDetailsResponse
 
 
 class DMarketApi:
@@ -325,3 +325,13 @@ class DMarketApi:
         url = API_URL + url_path
         response = await self.api_call(url, method, headers, body=body)
         return response
+
+    async def user_offers_details(self, body: OfferDetails):
+        method = 'POST'
+        url_path = '/exchange/v1/offers/details'
+        body = body.dict()
+        headers = self.generate_headers(method, url_path, body=body)
+        url = API_URL + url_path
+        response = await self.api_call(url, method, headers, body=body)
+        return OfferDetailsResponse(**response)
+        #return response
