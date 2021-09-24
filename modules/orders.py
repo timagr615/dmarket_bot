@@ -23,6 +23,7 @@ class OrderAnalytics:
         self.min_price = BuyParams.MIN_PRICE
         self.all_sales = BuyParams.ALL_SALES
 
+        self.avg_price_count = BuyParams.AVG_PRICE_COUNT
         self.profit_percent = BuyParams.PROFIT_PERCENT
         self.good_points_percent = BuyParams.GOOD_POINTS_PERCENT
         self.first_sale = BuyParams.FIRST_SALE
@@ -44,10 +45,10 @@ class OrderAnalytics:
             sales = list()
             first_sale = int(skin.LastSales[-1].Date.timestamp())
             last_sale = int(skin.LastSales[0].Date.timestamp())
-            if first_sale > (time() - self.first_sale * 60 * 60 * 24):
+            if first_sale < (time() - self.first_sale * 60 * 60 * 24):
                 if last_sale > (time() - self.last_sale * 60 * 60 * 24):
                     for sale in skin.LastSales:
-                        #print(skin.market_hash_name)
+
                         if int(sale.Date.timestamp()) > (time() - self.days_count * 60 * 60 * 24):
                             sales.append(sale)
                     if len(sales) >= self.sale_count:
@@ -134,6 +135,8 @@ class OrderAnalytics:
 
     async def analyze_market_offers(self, skin: SkinHistory):
         market_info = await self.bot.cumulative_price(skin.title, skin.game)
+        len_avg = skin.LastSales[0:self.avg_price_count]
+        avg_price_10 = sum([s.Price.Amount/100 for s in len_avg])/len(len_avg)
         best_offer, second_offer, offers_count = self.first_second_offer(market_info.Offers)
         best_target, second_target, targets_count = self.first_second_offer(market_info.Targets)
         if best_offer == 0 or (best_target - second_target)/best_offer*100 > 3:
@@ -141,14 +144,18 @@ class OrderAnalytics:
         if second_offer == 0 or (second_offer - best_offer)/second_offer*100 > 3:
             best_offer = second_offer
         profit = -(best_target - (1 - self.bot.SELL_FEE/100) * best_offer) / best_target * 100
-        return best_offer, best_target, offers_count, targets_count, profit
+        profit_by_avg = -(best_target - (1 - self.bot.SELL_FEE/100) * avg_price_10) / best_target * 100
+        return best_offer, best_target, offers_count, targets_count, profit, round(profit_by_avg, 2)
 
     async def frequency2(self, skins: List[SkinHistory]) -> List[SkinOrder]:
         items = list()
         skins = sorted(skins, key=lambda x: x.title)
         for skin in skins:
-            best_offer, best_target, offers_count, targets_count, profit = await self.analyze_market_offers(skin)
-            if profit > self.profit_percent:
+            best_offer, best_target, offers_count, targets_count, profit, profit_2 = \
+                await self.analyze_market_offers(skin)
+
+            if profit_2 > self.profit_percent and profit > self.profit_percent:
+                # print(skin.title, best_offer, offers_count, best_target, targets_count, profit, profit_2)
                 my_sell_price = best_target * (1 + self.profit_percent / 100)
                 count = 0
                 points_count = math.ceil(len(skin.LastSales) / 100 * self.good_points_percent)
@@ -169,18 +176,18 @@ class OrderAnalytics:
         for game in GAMES:
             skins += [i for i in SelectSkin.select_all() if self.min_price < i.avg_price < self.max_price
                       and i.game == game.value]
-        logger.debug(f'SKINS {len(skins)}')
+        logger.info(f'SKINS {len(skins)}')
         if skins:
             skins = self.popularity_control(skins)
-            logger.debug(f'POP CONTROL {len(skins)}')
+            logger.info(f'POP CONTROL {len(skins)}')
             skins = self.boost_control(skins)
-            logger.debug(f'BOOST CONTROL {len(skins)}')
+            logger.info(f'BOOST CONTROL {len(skins)}')
             if self.frequency:
                 #skins = await self.frequency_skins(skins)
                 skins = await self.frequency2(skins)
             else:
                 skins = await self.good_skins(skins)
-            logger.debug(f'GOOD CONTROL {len(skins)}')
+            logger.info(f'GOOD CONTROL {len(skins)}')
             for skin in skins:
                 skin.maxPrice = int(skin.bestOrder*(1 + self.max_threshold/100))
                 skin.minPrice = int(skin.bestOrder*(1 - self.min_threshold/100))
