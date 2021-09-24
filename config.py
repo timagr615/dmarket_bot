@@ -40,16 +40,17 @@ class BuyParams:
     STOP_ORDERS_BALANCE = 1000
     FREQUENCY = True
     MIN_PRICE = 1000
-    MAX_PRICE = 7500
+    MAX_PRICE = 12500
 
-    PROFIT_PERCENT = 6
-    GOOD_POINTS_PERCENT = 35
+    PROFIT_PERCENT = 5
+    GOOD_POINTS_PERCENT = 30
+    AVG_PRICE_COUNT = 7
 
     ALL_SALES = 80
-    DAYS_COUNT = 20
-    SALE_COUNT = 10
-    LAST_SALE = 2  # Последняя продажа не позднее LAST_SALE дней назад
-    FIRST_SALE = 15  # Первая покупка не позже FIRST_SALE дней назад
+    DAYS_COUNT = 23
+    SALE_COUNT = 11
+    LAST_SALE = 3  # Последняя продажа не позднее LAST_SALE дней назад
+    FIRST_SALE = 20  # Первая покупка не позже FIRST_SALE дней назад
 
     MAX_COUNT_SELL_OFFERS = 20
 
@@ -61,5 +62,5 @@ class BuyParams:
 
 
 class SellParams:
-    MIN_PERCENT = 3
-    MAX_PERCENT = 5
+    MIN_PERCENT = 4.4
+    MAX_PERCENT = 15
